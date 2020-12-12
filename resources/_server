@@ -1,0 +1,30 @@
+/* 
+  service: 'gmail',
+  auth: {
+    user: 'iamred123456@gmail.com',
+    pass: 'anurag@123'
+  },
+  port: 587,
+  secure: false 
+*/
+ // kwctnavltpekpxfy
+/*   
+host:"smtp.mail.yahoo.com",
+  service: "Yahoo",
+  auth: {
+    user: 'mailer123456@yahoo.com',
+    pass: 'riazrwyfdzsptnsh'
+  },
+  port: 465,
+  secure: false */
+
+ /*
+ host:"smtp.mail.yahoo.com",
+  service: "Yahoo",
+  auth: {
+    user: 'noreply.cityrentacar@yahoo.com',
+    pass: 'kwctnavltpekpxfy'
+  },
+  port: 465,
+  secure: false
+*/ 

@@ -4,6 +4,7 @@ const mysql = require('mysql');
 var formidable = require('formidable');
 const jsyaml = require("js-yaml")
 var fs = require('fs');
+const sendMail=require("./communication");
 /**************************************************************************/
 var configs;
 var loadConfigs = (callback) => {
@@ -61,6 +62,9 @@ app.listen(port, () => {
 const corsAuth = function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-requested-with");
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
+  res.writeHead(200);
+  //res.sendStatus(200);
   next();
 }
 app.use(corsAuth);
@@ -77,16 +81,17 @@ function uploadVehicleInfo(req, res) {
     var vehicle_data = req.body;
     var resource_url = (vehicle_data.http_proto) + '://' + (vehicle_data.server_host) + '/' + (vehicle_data.file);
     //console.log(resource_url);
-    var query = `INSERT INTO cty_fleet (category, fueltype, imgId, vehicleId,resource_uri) VALUES ('${vehicle_data.veh_catg}','${vehicle_data.fuelid}','${vehicle_data.filename}','${vehicle_data.vehid}','${resource_url}')`;
+    var query = `INSERT INTO cty_fleet (category, fueltype, imgId, vehicleId,resource_uri) VALUES ('${vehicle_data.veh_catg.toUpperCase()}','${(((vehicle_data.fuelid).toUpperCase()).substring(0,1)).concat(((vehicle_data.fuelid).toLowerCase()).substring(1))}','${vehicle_data.filename}','${vehicle_data.vehid.toUpperCase()}','${resource_url}')`;
     db.query(query, (err, result, fields) => {
       if (err) throw err;
       console.log('vehicle info saved');
+      res.end('201');
     });
-    res.send('201');
-    res.end();
+    //res.send('201');
+
   } else {
-    res.send('500');
-    res.end();
+    //res.send('500');
+    res.end('500');
   }
 
 }
@@ -99,30 +104,43 @@ function getCategory(req, res) {
     for (var i = 0; i < results.length; i++) {
       catg[i] = results[i].category;
     }
-    res.send(JSON.stringify(catg));
-    res.end();
+    //res.send();
+    res.end(JSON.stringify(catg));
   })
 }
 
 function setCategory(req, res) {
-  var vehicle_data = req.body;
-  var query = `INSERT INTO cty_category (category) VALUES ('${vehicle_data.new_category.toUpperCase()}')`;
+  if (Object.keys(req.body).length) {
+    var vehicle_data = req.body;
+    console.log(vehicle_data);
+    var query = `INSERT INTO cty_category (category) VALUES ('${vehicle_data.new_category.toUpperCase()}')`;
 
-  db.query(query, (err, result) => {
-    if (err) throw err;
-    res.send('201');
-  })
+    db.query(query, (err, result) => {
+      if (err) throw err;
+      res.end('201');
+    })
+  } else {
+    res.end('401');
+
+  }
+
 }
 
 
 function getVehicles(req, res) {
+  //console.log(req.query);
+  if (Object.keys(req.query).length) {
   var catg = req.query.catg;
   //const serverUrl = 'https://cityrentacar-node-server.herokuapp.com/assets';
   //const serverUrl='/images/fleet/';
   db.query("select category, vehicleId, imgId, fueltype, resource_uri from cty_fleet where `category`='" + catg.toUpperCase() + "'", (err, result, fields) => {
-    if(err) throw err;
-    res.send(JSON.stringify(result));
+    if (err) throw err;
+    res.end(JSON.stringify(result));
   })
+  }
+  else{
+    res.end('400');
+  }
 }
 
 function status(req, res) {
@@ -134,9 +152,22 @@ function upload(req, res) {
   uploadVehicleInfo(req, res);
 }
 
+
+function sendMailToOwner(req,res){
+  if(Object.keys(req.body).length){
+    //console.log(req.body);
+    sendMail(req,res);
+    res.end('201');
+  }
+  else{
+    res.end('401');
+  }
+}
+
 /****************************** ROUTE MAPPING *****************************/
 app.use('/upload', upload);
 app.use('/getVehicles', getVehicles);
 app.use('/status', status);
 app.use('/getCategory', getCategory);
 app.use('/setCategory', setCategory);
+app.use('/ping/mail', sendMailToOwner);
