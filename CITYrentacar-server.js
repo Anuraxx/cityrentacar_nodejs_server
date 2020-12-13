@@ -152,7 +152,6 @@ function upload(req, res) {
   uploadVehicleInfo(req, res);
 }
 
-
 function sendMailToOwner(req,res){
   if(Object.keys(req.body).length){
     //console.log(req.body);
@@ -164,6 +163,31 @@ function sendMailToOwner(req,res){
   }
 }
 
+var query_result;
+function queryExecutor(queryName){
+  fs.readFile('./resources/Queries/generic.yaml', (err, data) => {
+    if(err) throw err;
+
+    var queries = jsyaml.load(data);
+
+    if(queries[queryName] != undefined){
+      db.query(queries[queryName] , (err, result) => {
+        if (err) throw err;
+        query_result= JSON.stringify(result);
+      })
+    }
+  });
+}
+
+function getDataFromQuery(req,res){
+  if(Object.keys(req.query).length){
+    queryExecutor(req.query.query_name);
+    setTimeout(()=>{
+      res.end(query_result);
+    },2000);
+  }else res.end('400');
+}
+
 /****************************** ROUTE MAPPING *****************************/
 app.use('/upload', upload);
 app.use('/getVehicles', getVehicles);
@@ -171,3 +195,4 @@ app.use('/status', status);
 app.use('/getCategory', getCategory);
 app.use('/setCategory', setCategory);
 app.use('/ping/mail', sendMailToOwner);
+app.use('/getDataFromQuery', getDataFromQuery);

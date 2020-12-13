@@ -1,0 +1,1 @@
+getVehicleIds: Select distinct vehicleId from cty_fleet
