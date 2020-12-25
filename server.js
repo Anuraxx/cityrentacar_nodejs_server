@@ -16,7 +16,6 @@ var loadConfigs = (callback) => {
 
   });
 }
-
 var db_config;
 var db;
 
@@ -188,6 +187,11 @@ function getDataFromQuery(req,res){
   }else res.end('400');
 }
 
+function restart(req,res){
+  console.log("restarted");
+  module.log.uptime();
+  res.end();
+}
 /****************************** ROUTE MAPPING *****************************/
 app.use('/upload', upload);
 app.use('/getVehicles', getVehicles);
@@ -196,3 +200,4 @@ app.use('/getCategory', getCategory);
 app.use('/setCategory', setCategory);
 app.use('/ping/mail', sendMailToOwner);
 app.use('/getDataFromQuery', getDataFromQuery);
+app.use('/restart',restart);
