@@ -5,6 +5,7 @@ var formidable = require('formidable');
 const jsyaml = require("js-yaml")
 var fs = require('fs');
 const sendMail=require("./communication");
+const modules=require("./module");
 /**************************************************************************/
 var configs;
 var loadConfigs = (callback) => {
@@ -189,8 +190,8 @@ function getDataFromQuery(req,res){
 
 function restart(req,res){
   console.log("restarted");
-  module.log.uptime();
-  res.end();
+  modules.log.uptime();
+  res.end('Running');
 }
 /****************************** ROUTE MAPPING *****************************/
 app.use('/upload', upload);
