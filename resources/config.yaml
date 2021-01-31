@@ -1,7 +1,14 @@
 SERVER_URL: https://cityrentacar-node-server.herokuapp.com
-DB_CONFIG:
+DB_CONFIG_heroku:
   host: bpnpbp38xxzmisesnrgx-mysql.services.clever-cloud.com
   user: uaiotj20bpooqzk8
   password: mSI3MNmDapEWPD0CoYIy
   port: 3306
   database: bpnpbp38xxzmisesnrgx
+DB_CONFIG:
+  host: 'mysql80-afe9.euw2.cloud.ametnes.com'
+  user: 'VdhMzGsZSv'
+  password: 'smPpyJW1kwS0Eak50c5s'
+  port: 3316
+  database: 3058069602
+  ssl : true

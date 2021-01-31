@@ -60,6 +60,7 @@ app.listen(port, () => {
 
 
 const corsAuth = function (req, res, next) {
+  console.log('[local]');
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-requested-with");
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
@@ -193,6 +194,19 @@ function restart(req,res){
   modules.log.uptime();
   res.end('Running');
 }
+
+function authenticate(req,res){
+  if(Object.keys(req.query).length){
+    db.query("select username, passcode from cty_admin where `username`='"+`${req.query.username}`+"'", (err, result, fields) => {
+      if (err) throw err;
+      if(result.length!=0 && result[0].passcode==req.query.passcode){
+        res.end('SUCCESS');
+      }
+      else
+        res.end('FAIL');
+    })
+  }else res.end('400');
+}
 /****************************** ROUTE MAPPING *****************************/
 app.use('/upload', upload);
 app.use('/getVehicles', getVehicles);
@@ -202,3 +216,4 @@ app.use('/setCategory', setCategory);
 app.use('/ping/mail', sendMailToOwner);
 app.use('/getDataFromQuery', getDataFromQuery);
 app.use('/restart',restart);
+app.use('/auth',authenticate);
