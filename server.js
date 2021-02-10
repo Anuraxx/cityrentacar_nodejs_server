@@ -29,7 +29,7 @@ function handleDisconnect() {
       console.log('error when connecting to db:', err);
       setTimeout(handleDisconnect, 2000);
     } else
-      console.log('db connected');
+      console.log(`[${configs.DB_CONFIG.host}] db connected`);
   });
 
   db.on('error', function (err) {
@@ -46,6 +46,7 @@ function handleDisconnect() {
 //process.env.PORT
 var port = process.env.PORT || 3000;
 var app = express();
+var debug = process.env.debug || false;
 
 app.listen(port, () => {
   console.log(`servr stated on port :: ${port}`);
@@ -56,11 +57,14 @@ app.listen(port, () => {
   });
 });
 
+const logger =(req, res, next)=>{
+  console.log(`[ ${new Date().toLocaleString()} ${req.hostname} ${req.baseUrl} ${req.method} ]`);
 
+  next();
+}
 
 
 const corsAuth = function (req, res, next) {
-  console.log('[local]');
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, x-requested-with");
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
@@ -73,7 +77,7 @@ app.use(parser.json());
 app.use(parser.urlencoded({
   extended: true
 }));
-
+app.use('/',logger);
 
 
 function uploadVehicleInfo(req, res) {
