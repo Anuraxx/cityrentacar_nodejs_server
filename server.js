@@ -58,7 +58,7 @@ app.listen(port, () => {
 });
 
 const logger =(req, res, next)=>{
-  console.log(`[ ${new Date().toLocaleString()} ${req.hostname} ${req.baseUrl} ${req.method} ]`);
+  console.log(`[ ${new Date().toLocaleString()} ${req.hostname} ${(req.originalUrl).split('?')[0]} ${req.method} ]`);
 
   next();
 }
